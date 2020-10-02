@@ -29,6 +29,7 @@ namespace GameServer
         }
 
         private static void TCPConnectCallBack(IAsyncResult _result)
+
         {
             TcpClient _client = tcplistener.EndAcceptTcpClient(_result);
             tcplistener.BeginAcceptTcpClient(new AsyncCallback(TCPConnectCallBack), null);
@@ -42,7 +43,6 @@ namespace GameServer
                     return;
                 }
             }
-
             Console.WriteLine($"{_client.Client.RemoteEndPoint} falied to connect: server full!");
         }
         private static void InitializeServerData()

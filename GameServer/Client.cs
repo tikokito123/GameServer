@@ -22,6 +22,7 @@ namespace GameServer
         {
             public TcpClient socket;
             private readonly int id;
+            private Packet receiveData; 
             private NetworkStream stream;
             private byte[] reciveBuffer;
             public TCP(int _id)
@@ -36,8 +37,22 @@ namespace GameServer
 
                 stream = socket.GetStream();
                 reciveBuffer = new byte[dataBufferSize];
-                stream.BeginRead(reciveBuffer, 0, dataBufferSize,ReceiveCallBack, null);
-                //TODO 
+                stream.BeginRead(reciveBuffer, 0, dataBufferSize, ReceiveCallBack, null);
+                ServerStand.Welcome(id, "Welcome to the server!");
+            }
+            public void SendData(Packet _packet)
+            {
+                try
+                {
+                    if (socket != null)
+                    {
+                        stream.BeginRead(_packet.ToArray(), 0, _packet.Length(), null, null);
+                    }
+                }
+                catch (Exception _ex)
+                {
+                    Console.WriteLine($"Error sending data to player {id} via TCP: {_ex}");
+                }
             }
             private void ReceiveCallBack(IAsyncResult _result)
             {
@@ -53,6 +68,7 @@ namespace GameServer
                     Array.Copy(reciveBuffer, _data, _byteLength);
 
                     //TODO handle data
+                    receiveData = new Packet();
                     stream.BeginRead(reciveBuffer, 0, dataBufferSize, ReceiveCallBack, null);
                 }
                 catch (Exception _ex)
